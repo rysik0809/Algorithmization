@@ -1,8 +1,11 @@
 #include <iostream>
 #include <limits>
 #include <cmath>
+#include <vector>
+#include <map>
 
 using namespace std;
+
 struct TreeNode {
     int data;
     TreeNode* left;
@@ -18,6 +21,43 @@ struct Tree {
     
     Tree() : root(nullptr), allowDuplicates(false), size(0) {}
 };
+
+void collectValuesAndLevels(TreeNode* node, int level, map<int, vector<int>>& valuesMap) {
+    if (node == nullptr) return;
+    
+    valuesMap[node->data].push_back(level);
+    
+    collectValuesAndLevels(node->left, level + 1, valuesMap);
+    collectValuesAndLevels(node->right, level + 1, valuesMap);
+}
+
+void findAllDuplicates(Tree* tree) {
+    if (tree == nullptr || tree->root == nullptr) {
+        cout << "Дерево пустое!\n";
+        return;
+    }
+    
+    map<int, vector<int>> valuesMap;
+    collectValuesAndLevels(tree->root, 0, valuesMap);
+    
+    bool hasDuplicates = false;
+    cout << "Найденные дубликаты:\n";
+    
+    for (const auto& pair : valuesMap) {
+        if (pair.second.size() > 1) {
+            hasDuplicates = true;
+            cout << "Значение " << pair.first << " встречается " << pair.second.size() << " раз(а) на уровнях: ";
+            for (int level : pair.second) {
+                cout << level << " ";
+            }
+            cout << endl;
+        }
+    }
+    
+    if (!hasDuplicates) {
+        cout << "Дубликаты не найдены.\n";
+    }
+}
 
 TreeNode* insertWithoutDuplicates(TreeNode* root, int value, int& size) {
     if (root == nullptr) {
@@ -48,12 +88,12 @@ TreeNode* insertWithDuplicates(TreeNode* root, int value, int& size) {
     
     return root;
 }
+
 void waitForEnter() {
     cout << "\nНажмите Enter для продолжения...";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
 }
-
 
 bool search(TreeNode* root, int target) {
     if (root == nullptr) {
@@ -138,12 +178,16 @@ Tree* createTreeFromUserInput() {
     return tree;
 }
 
-void inOrderTraversal(TreeNode* root) {
-    if (root != nullptr) {
-        inOrderTraversal(root->left);
-        cout << root->data << " ";
-        inOrderTraversal(root->right);
+void inOrderTraversal(TreeNode* r, int k) {
+    if(r == nullptr){
+        return;
     }
+    inOrderTraversal(r->right, k + 1);
+    for(int i = 0; i < k; i++){
+        cout<<"   ";
+    }
+    cout<<r->data<<"\n";
+    inOrderTraversal(r->left, k + 1);
 }
 
 void deleteTree(TreeNode* root) {
@@ -225,18 +269,19 @@ int main() {
         cout << "\nМеню:\n";
         cout << "1. Создать новое дерево\n";
         cout << "2. Поиск значения в дереве\n";
-        cout << "3. Показать дерево (в порядке возрастания)\n";
+        cout << "3. Нарисовать дерево\n";
         cout << "4. Добавить значение в дерево\n";
         cout << "5. Информация о дереве\n";
         cout << "6. Анализ сложности поиска\n";
-        cout << "7. Выход\n";
+        cout << "7. Найти все дубликаты\n";
+        cout << "8. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
         
         if (cin.fail()) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Ошибка! Пожалуйста, введите число от 1 до 7.\n";
+            cout << "Ошибка! Пожалуйста, введите число от 1 до 8.\n";
             waitForEnter();
             continue;
         }
@@ -284,8 +329,8 @@ int main() {
                 if (tree == nullptr || tree->root == nullptr) {
                     cout << "Дерево пустое!\n";
                 } else {
-                    cout << "Элементы дерева (в порядке возрастания): ";
-                    inOrderTraversal(tree->root);
+                    cout << "Дерево:\n";
+                    inOrderTraversal(tree->root, 0);
                     cout << endl;
                 }
                 waitForEnter();
@@ -320,18 +365,24 @@ int main() {
             }
             
             case 7: {
+                findAllDuplicates(tree);
+                waitForEnter();
+                break;
+            }
+            
+            case 8: {
                 cout << "Выход из программы...\n";
                 break;
             }
             
             default: {
-                cout << "Неверный выбор! Пожалуйста, выберите от 1 до 7.\n";
+                cout << "Неверный выбор! Пожалуйста, выберите от 1 до 8.\n";
                 waitForEnter();
                 break;
             }
         }
         
-    } while (choice != 7);
+    } while (choice != 8);
     
     if (tree != nullptr) {
         deleteTree(tree->root);
