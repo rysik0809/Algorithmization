@@ -7,28 +7,61 @@
 using namespace std;
 
 // Список смежности
-class Graph
-{
-    int numVertices;
-    list<int> *adjLists;
+class Node{
+public:
+    int data;
+    Node* next;
 
+    Node(int value):data(value),next(nullptr){}
+};
+class LinkedList{
+private:
+    Node* head;
+
+public:
+    LinkedList():head(nullptr){}
+    ~LinkedList(){ clear(); }
+
+    void push_front(int value) {
+        Node* newNode = new Node(value);
+        newNode->next = head;
+        head = newNode;
+    }
+    Node* getHead() const{
+        return head;
+    }
+    void clear() {
+        Node* current = head;
+        while (current != nullptr) {
+            Node* next = current->next;
+            delete current;
+            current = next;
+        }
+        head = nullptr;
+    }
+    bool empty() const {
+        return head == nullptr;
+    }
+};
+
+class Graph{
+    int numVertices;
+    LinkedList* adjLists;
 public:
     Graph(int V);
     void addEdge(int src, int dest);
     void printGraph();
     ~Graph();
 };
-Graph::Graph(int vertices)
-{
+
+Graph::Graph(int vertices){
     numVertices = vertices;
-    adjLists = new list<int>[vertices];
+    adjLists = new LinkedList[vertices];
 }
-Graph::~Graph()
-{
+Graph::~Graph(){
     delete[] adjLists;
 }
-void Graph::addEdge(int src, int dest)
-{
+void Graph::addEdge(int src, int dest){
     adjLists[src].push_front(dest);
 }
 void Graph::printGraph()
@@ -36,14 +69,19 @@ void Graph::printGraph()
     for (int i = 0; i < numVertices; i++)
     {
         cout << "Вершина " << i << ":";
-        for (auto it = adjLists[i].begin(); it != adjLists[i].end(); ++it)
+        
+        Node* current = adjLists[i].getHead();
+        while (current != nullptr)
         {
-            cout << " -> " << *it;
+            cout << " -> " << current->data;
+            current = current->next;
         }
         cout << endl;
     }
     cout << endl;
 }
+
+
 
 // Матрица смежности
 int printMatrix(int** m, int n){
@@ -63,7 +101,6 @@ int printMatrix(int** m, int n){
     cout << endl;
     return 0;
 }
-
 int** createMatrix(int n){
     int** m = new int*[n];
     for (int i = 0; i < n; i++) {
@@ -76,7 +113,6 @@ int** createMatrix(int n){
     }
     return m;
 }
-
 void deleteMatrix(int** m, int n) {
     for (int i = 0; i < n; ++i) {
         delete[] m[i];
@@ -104,9 +140,9 @@ int main(){
     int N1 = 0;
     int N2 = 0;
     
-    cout << "Введите кол-во вершин в матрице M1: " << endl;
+    cout << "Введите кол-во вершин в матрице M1: ";
     cin >> N1;
-    cout << "Введите кол-во вершин в матрице M2: " << endl;
+    cout << "Введите кол-во вершин в матрице M2: ";
     cin >> N2;
     
     int** M1 = createMatrix(N1);
