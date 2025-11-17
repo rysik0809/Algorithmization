@@ -61,7 +61,6 @@ public:
         return adjLists[vertex].getHead(); 
     }
 };
-
 Graph::Graph(int vertices){
     numVertices = vertices;
     adjLists = new LinkedList[vertices];
@@ -69,7 +68,6 @@ Graph::Graph(int vertices){
 Graph::~Graph(){
     delete[] adjLists;
 }
-
 void Graph::addEdge(int src, int dest){
     adjLists[src].push_front(dest);
 }
