@@ -87,9 +87,16 @@ int** identifyVertices(int** matrix, int n, int v1, int v2) {
             int newI = oldToNew[i];
             int newJ = oldToNew[j];
             
-            if (i == v1 || j == v1) {
-                newMatrix[newI][newJ] = matrix[i][j] || matrix[i][v2] || matrix[v2][j];
-            } else {
+            if (i == v1 && j == v1) {
+                newMatrix[newI][newJ] = matrix[v1][v1] || matrix[v2][v2];
+            }
+            else if (i == v1) {
+                newMatrix[newI][newJ] = matrix[v1][j] || matrix[v2][j];
+            }
+            else if (j == v1) {
+                newMatrix[newI][newJ] = matrix[i][v1] || matrix[i][v2];
+            }
+            else {
                 newMatrix[newI][newJ] = matrix[i][j];
             }
         }
@@ -137,12 +144,8 @@ int** splitVertex(int** matrix, int n, int v) {
     
     for (int i = 0; i < n; i++) {
         if (i != v && matrix[v][i] == 1) {
-            if (rand() % 2 == 0) {
-                newMatrix[v][i] = 0;
-                newMatrix[i][v] = 0;
-                newMatrix[newVertex][i] = 1;
-                newMatrix[i][newVertex] = 1;
-            }
+            newMatrix[newVertex][i] = 1;
+            newMatrix[i][newVertex] = 1;
         }
     }
     
