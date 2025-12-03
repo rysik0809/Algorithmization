@@ -88,7 +88,7 @@ int main() {
     cin >> n;
     cout << "Порядок обхода графа в ширину (матрица смежности): ";
     BFS(G, numG, visited, n);
-    
+    cout << endl;
     deleteM(G, numG, visited);
     
     return 0;
