@@ -10,21 +10,18 @@ using namespace std;
 
 const int INF = numeric_limits<int>::max();
 
-// Функция для генерации ориентированного взвешенного графа (матрица смежности)
 vector<vector<int>> createWeightedDirectedGraph(int n, int maxWeight = 15) {
     vector<vector<int>> graph(n, vector<int>(n, 0));
     
-    // Создаем базовую связность графа (гарантируем, что каждая вершина имеет хотя бы одно исходящее ребро)
     for (int i = 0; i < n; i++) {
-        int j = (i + 1) % n; // Связываем вершины по кругу для гарантии связности
+        int j = (i + 1) % n; 
         int weight = 1 + rand() % maxWeight;
         graph[i][j] = weight;
     }
     
-    // Добавляем случайные ребра
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (i != j && rand() % 3 == 1) { // Вероятность 1/3
+            if (i != j && rand() % 3 == 1) {
                 int weight = 1 + rand() % maxWeight;
                 graph[i][j] = weight;
             }
@@ -34,7 +31,6 @@ vector<vector<int>> createWeightedDirectedGraph(int n, int maxWeight = 15) {
     return graph;
 }
 
-// Функция для вывода матрицы смежности
 void printAdjacencyMatrix(const vector<vector<int>>& graph) {
     int n = graph.size();
     cout << "Матрица смежности ориентированного графа:" << endl;
@@ -58,12 +54,10 @@ void printAdjacencyMatrix(const vector<vector<int>>& graph) {
     cout << endl;
 }
 
-// Алгоритм Флойда-Уоршелла для всех пар кратчайших путей
 vector<vector<int>> floydWarshall(const vector<vector<int>>& graph) {
     int n = graph.size();
     vector<vector<int>> dist(n, vector<int>(n, INF));
     
-    // Инициализация матрицы расстояний
     for (int i = 0; i < n; i++) {
         dist[i][i] = 0;
         for (int j = 0; j < n; j++) {
@@ -73,7 +67,6 @@ vector<vector<int>> floydWarshall(const vector<vector<int>>& graph) {
         }
     }
     
-    // Алгоритм Флойда-Уоршелла
     for (int k = 0; k < n; k++) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -89,28 +82,24 @@ vector<vector<int>> floydWarshall(const vector<vector<int>>& graph) {
     return dist;
 }
 
-// Функция для вывода матрицы кратчайших расстояний в заданном формате
 void printShortestDistances(const vector<vector<int>>& dist) {
     int n = dist.size();
     
     cout << "== Задача 2: Поиск расстояний с использованием BFS/очереди ==" << endl;
     cout << "Матрица кратчайших расстояний (-1 означает недостижимость):" << endl << endl;
     
-    // Заголовок таблицы
     cout << "|    |";
     for (int j = 0; j < n; j++) {
         cout << setw(3) << j << " |";
     }
     cout << endl;
     
-    // Разделитель
     cout << "|";
     for (int j = 0; j <= n; j++) {
         cout << "----|";
     }
     cout << endl;
     
-    // Строки таблицы
     for (int i = 0; i < n; i++) {
         cout << "| " << setw(2) << i << " |";
         for (int j = 0; j < n; j++) {
@@ -125,21 +114,16 @@ void printShortestDistances(const vector<vector<int>>& dist) {
     cout << endl;
 }
 
-// Функция для вычисления эксцентриситетов и других параметров графа
 void calculateGraphProperties(const vector<vector<int>>& dist) {
     int n = dist.size();
     vector<int> eccentricity(n, 0);
     
-    // Вычисление эксцентриситетов (максимальное расстояние от вершины до других)
-    // Для ориентированного графа: максимальное расстояние ИЗ вершины i
     for (int i = 0; i < n; i++) {
         int maxDist = 0;
         bool hasUnreachable = false;
         for (int j = 0; j < n; j++) {
             if (i != j) {
                 if (dist[i][j] == INF) {
-                    // Если есть недостижимая вершина, эксцентриситет считается бесконечным
-                    // Но для вывода используем -1
                     hasUnreachable = true;
                 } else if (dist[i][j] > maxDist) {
                     maxDist = dist[i][j];
@@ -154,7 +138,6 @@ void calculateGraphProperties(const vector<vector<int>>& dist) {
         }
     }
     
-    // Вычисление радиуса и диаметра (только для вершин с конечными эксцентриситетами)
     int radius = INF;
     int diameter = 0;
     
@@ -169,7 +152,6 @@ void calculateGraphProperties(const vector<vector<int>>& dist) {
         }
     }
     
-    // Если нет вершин с конечными эксцентриситетами
     if (radius == INF) {
         radius = -1;
     }
@@ -177,7 +159,6 @@ void calculateGraphProperties(const vector<vector<int>>& dist) {
         diameter = -1;
     }
     
-    // Нахождение центральных вершин (с эксцентриситетом = радиусу)
     vector<int> centralVertices;
     for (int i = 0; i < n; i++) {
         if (eccentricity[i] == radius) {
@@ -185,7 +166,6 @@ void calculateGraphProperties(const vector<vector<int>>& dist) {
         }
     }
     
-    // Нахождение периферийных вершин (с эксцентриситетом = диаметру)
     vector<int> peripheralVertices;
     for (int i = 0; i < n; i++) {
         if (eccentricity[i] == diameter) {
@@ -193,7 +173,6 @@ void calculateGraphProperties(const vector<vector<int>>& dist) {
         }
     }
     
-    // Вывод результатов
     cout << "== Дополнительная информация ==" << endl;
     cout << "Эксцентриситеты вершин:" << endl;
     for (int i = 0; i < n; i++) {
@@ -249,21 +228,16 @@ int main() {
         return 1;
     }
     
-    // Создание ориентированного графа
     cout << "\nСоздание ориентированного взвешенного графа из " << n << " вершин..." << endl;
     auto graph = createWeightedDirectedGraph(n, 15);
     
-    // Вывод матрицы смежности
     cout << "\n";
     printAdjacencyMatrix(graph);
     
-    // Вычисление кратчайших расстояний
     auto distMatrix = floydWarshall(graph);
     
-    // Вывод матрицы кратчайших расстояний
     printShortestDistances(distMatrix);
     
-    // Вычисление и вывод свойств графа
     calculateGraphProperties(distMatrix);
     
     cout << "\n=========================================" << endl;
