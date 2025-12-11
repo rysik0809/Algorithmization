@@ -62,6 +62,11 @@ void deleteAdjacencyList(ListNode** adjList, int n, int* visited) {
     delete[] visited;
 }
 
+bool isIsolatedVertex(ListNode** adjList, int vertex) {
+    // Вершина изолирована, если у неё нет соседей (список пустой)
+    return adjList[vertex] == nullptr;
+}
+
 void BFS(ListNode** adjList, int numG, int* visited, int start) {
     queue<int> q;
     visited[start] = 1;
@@ -116,6 +121,20 @@ int main() {
         cout << "Ошибка: начальная вершина должна быть в диапазоне [0, " << numG - 1 << "]!" << endl;
         deleteAdjacencyList(adjList, numG, visited);
         return 1;
+    }
+    
+    // Проверка на изолированную вершину
+    if (isIsolatedVertex(adjList, startVertex)) {
+        cout << "ВНИМАНИЕ: Выбранная вершина " << startVertex << " является изолированной!" << endl;
+        cout << "Обход начнется только с этой вершины и завершится сразу." << endl;
+        cout << "Продолжить? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << "Обход отменен." << endl;
+            deleteAdjacencyList(adjList, numG, visited);
+            return 0;
+        }
     }
     
     BFS(adjList, numG, visited, startVertex);

@@ -22,6 +22,7 @@ int printMatrix(int** m, int n){
     cout << endl;
     return 0;
 }
+
 int** createMatrix(int n){
     int** m = new int*[n];
     for (int i = 0; i < n; i++) {
@@ -35,12 +36,22 @@ int** createMatrix(int n){
     }
     return m;
 }
+
 void deleteM(int** m, int n, int* v) {
     for (int i = 0; i < n; ++i) {
         delete[] m[i];
     }
     delete[] m;
     delete[] v;
+}
+
+bool isIsolatedVertex(int** G, int numG, int vertex) {
+    for(int i = 0; i < numG; i++){
+        if(i != vertex && G[vertex][i] == 1) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void BFS(int** G, int numG, int* visited, int s) {
@@ -53,7 +64,7 @@ void BFS(int** G, int numG, int* visited, int s) {
     {
         v = q.front();
         q.pop();
-        cout<<v;
+        cout<<v << " ";
         for(int i = 0; i < numG; i++){
             if(G[v][i] == 1 && visited[i] == 0){
                 q.push(i);
@@ -74,6 +85,7 @@ int main() {
         cout << "Ошибка: количество вершин должно быть положительным!" << endl;
         return 1;
     }
+    
     int* visited = new int[numG];
     for(int i = 0; i < numG; i++){
         visited[i] = 0;
@@ -86,9 +98,31 @@ int main() {
 
     cout << "Введите начальную вершину обхода: ";
     cin >> n;
+    
+    if (n < 0 || n >= numG) {
+        cout << "Ошибка: вершина должна быть в диапазоне [0, " << numG-1 << "]!" << endl;
+        deleteM(G, numG, visited);
+        return 1;
+    }
+    
+    // Проверка на изолированную вершину
+    if (isIsolatedVertex(G, numG, n)) {
+        cout << "ВНИМАНИЕ: Выбранная вершина " << n << " является изолированной!" << endl;
+        cout << "Обход начнется только с этой вершины и завершится сразу." << endl;
+        cout << "Продолжить? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << "Обход отменен." << endl;
+            deleteM(G, numG, visited);
+            return 0;
+        }
+    }
+    
     cout << "Порядок обхода графа в ширину (матрица смежности): ";
     BFS(G, numG, visited, n);
     cout << endl;
+    
     deleteM(G, numG, visited);
     
     return 0;
