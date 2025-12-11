@@ -46,6 +46,15 @@ void deleteM(int** m, int n, int* v) {
     }
 }
 
+bool isIsolatedVertex(int** G, int numG, int vertex) {
+    for(int i = 0; i < numG; i++){
+        if(i != vertex && G[vertex][i] == 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void DFSD(int** G, int numG, int* visited, int* distance, int current, int currentDistance) {
     visited[current] = 1;  
     distance[current] = currentDistance;  
@@ -66,6 +75,7 @@ void DFSDistance(int** G, int numG, int startVertex) {
         distance[i] = -1;    
     }
     
+    cout << "Порядок обхода вершин: ";
     DFSD(G, numG, visited, distance, startVertex, 0);
     cout << endl;
     
@@ -104,6 +114,21 @@ int main(){
         cout << "Ошибка: неверный номер вершины!" << endl;
         deleteM(G, numG, nullptr);
         return 1;
+    }
+    
+    // Проверка на изолированную вершину
+    if (isIsolatedVertex(G, numG, current)) {
+        cout << "ВНИМАНИЕ: Выбранная вершина " << current << " является изолированной!" << endl;
+        cout << "Обход начнется только с этой вершины и завершится сразу." << endl;
+        cout << "Все остальные вершины будут недостижимы." << endl;
+        cout << "Продолжить? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << "Обход отменен." << endl;
+            deleteM(G, numG, nullptr);
+            return 0;
+        }
     }
     
     DFSDistance(G, numG, current);

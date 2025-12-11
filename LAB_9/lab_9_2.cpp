@@ -36,6 +36,10 @@ struct AdjacencyList {
         return false;
     }
     
+    bool isEmpty() {
+        return head == nullptr;
+    }
+    
     ~AdjacencyList() {
         ListNode* current = head;
         while (current != nullptr) {
@@ -82,12 +86,18 @@ void deleteGraph(AdjacencyList* graph, int n, int* distance) {
     delete[] distance;
 }
 
+bool isIsolatedVertex(AdjacencyList* graph, int vertex) {
+    return graph[vertex].isEmpty();
+}
+
 void BFSD(AdjacencyList* graph, int numG, int* distance, int s) {
     queue<int> q;
     int v = 0;
     distance[s] = 0;
     q.push(s);
 
+    cout << "Порядок обхода вершин: ";
+    
     while (!q.empty()) {
         v = q.front();
         q.pop();
@@ -106,7 +116,11 @@ void BFSD(AdjacencyList* graph, int numG, int* distance, int s) {
     
     cout << endl << "Расстояния от вершины " << s << " до:" << endl;
     for (int i = 0; i < numG; i++) {
-        cout << "Вершина " << i << ": " << distance[i] << endl;
+        if (distance[i] == -1) {
+            cout << "Вершина " << i << ": недостижима" << endl;
+        } else {
+            cout << "Вершина " << i << ": " << distance[i] << endl;
+        }
     }
 }
 
@@ -138,6 +152,21 @@ int main() {
         cout << "Ошибка: неверный номер вершины!" << endl;
         deleteGraph(graph, numG, distance);
         return 1;
+    }
+    
+    // Проверка на изолированную вершину
+    if (isIsolatedVertex(graph, startVertex)) {
+        cout << "ВНИМАНИЕ: Выбранная вершина " << startVertex << " является изолированной!" << endl;
+        cout << "Обход начнется только с этой вершины и завершится сразу." << endl;
+        cout << "Все остальные вершины будут недостижимы." << endl;
+        cout << "Продолжить? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << "Обход отменен." << endl;
+            deleteGraph(graph, numG, distance);
+            return 0;
+        }
     }
     
     BFSD(graph, numG, distance, startVertex);

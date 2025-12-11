@@ -22,6 +22,7 @@ int printMatrix(int** m, int n){
     cout << endl;
     return 0;
 }
+
 int** createMatrix(int n){
     int** m = new int*[n];
     for (int i = 0; i < n; i++) {
@@ -35,6 +36,7 @@ int** createMatrix(int n){
     }
     return m;
 }
+
 void deleteM(int** m, int n, int* v) {
     for (int i = 0; i < n; ++i) {
         delete[] m[i];
@@ -43,17 +45,28 @@ void deleteM(int** m, int n, int* v) {
     delete[] v;
 }
 
+bool isIsolatedVertex(int** G, int numG, int vertex) {
+    for(int i = 0; i < numG; i++){
+        if(i != vertex && G[vertex][i] == 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void BFSD(int** G, int numG, int* distance, int s) {
     queue<int> q;
     int v = 0;
     distance[s] = 0;
     q.push(s);
 
+    cout << "Порядок обхода вершин: ";
+    
     while (!q.empty())
     {
         v = q.front();
         q.pop();
-        cout<<v;
+        cout << v << " ";
 
         for(int i = 0; i < numG; i++){
             if(G[v][i] == 1 && distance[i] == -1){
@@ -62,11 +75,15 @@ void BFSD(int** G, int numG, int* distance, int s) {
             }
         }
     }
-    cout<<endl;
-    cout<<"Distance from "<<s<<" to: "<<endl;
-
+    
+    cout << endl << "Расстояния от вершины " << s << " до:" << endl;
+    
     for(int i = 0; i < numG; i++){
-        cout<<i<<" : "<<distance[i]<<endl;
+        if(distance[i] == -1) {
+            cout << i << " : недостижима" << endl;
+        } else {
+            cout << i << " : " << distance[i] << endl;
+        }
     }
 }
 
@@ -81,6 +98,7 @@ int main() {
         cout << "Ошибка: количество вершин должно быть положительным!" << endl;
         return 1;
     }
+    
     int* distance = new int[numG];
     for(int i = 0; i < numG; i++){
         distance[i] = -1;
@@ -93,8 +111,32 @@ int main() {
 
     cout << "Введите начальную вершину обхода: ";
     cin >> n;
+    
+    // Проверка на корректность вершины
+    if (n < 0 || n >= numG) {
+        cout << "Ошибка: вершина должна быть в диапазоне [0, " << numG-1 << "]!" << endl;
+        deleteM(G, numG, distance);
+        return 1;
+    }
+    
+    // Проверка на изолированную вершину
+    if (isIsolatedVertex(G, numG, n)) {
+        cout << "ВНИМАНИЕ: Выбранная вершина " << n << " является изолированной!" << endl;
+        cout << "Обход начнется только с этой вершины и завершится сразу." << endl;
+        cout << "Все остальные вершины будут недостижимы." << endl;
+        cout << "Продолжить? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << "Обход отменен." << endl;
+            deleteM(G, numG, distance);
+            return 0;
+        }
+    }
+    
     BFSD(G, numG, distance, n);
     cout << endl;
+    
     deleteM(G, numG, distance);
     
     return 0;

@@ -35,6 +35,10 @@ struct AdjacencyList {
         return false;
     }
     
+    bool isEmpty() {
+        return head == nullptr;
+    }
+    
     ~AdjacencyList() {
         ListNode* current = head;
         while (current != nullptr) {
@@ -84,6 +88,10 @@ void deleteGraph(AdjacencyList* graph, int n, int* distance, int* visited) {
     }
 }
 
+bool isIsolatedVertex(AdjacencyList* graph, int vertex) {
+    return graph[vertex].isEmpty();
+}
+
 void DFSDRecursive(AdjacencyList* graph, int numG, int* visited, int* distance, 
     int current, int currentDistance) {
     visited[current] = 1;        
@@ -110,6 +118,7 @@ void DFSDistance(AdjacencyList* graph, int numG, int startVertex) {
         distance[i] = -1;    
     }
     
+    cout << "Порядок обхода вершин: ";
     DFSDRecursive(graph, numG, visited, distance, startVertex, 0);
     cout << endl;
     
@@ -150,6 +159,21 @@ int main() {
         cout << "Ошибка: неверный номер вершины!" << endl;
         deleteGraph(graph, numG, nullptr, nullptr);
         return 1;
+    }
+    
+    // Проверка на изолированную вершину
+    if (isIsolatedVertex(graph, startVertex)) {
+        cout << "ВНИМАНИЕ: Выбранная вершина " << startVertex << " является изолированной!" << endl;
+        cout << "Обход начнется только с этой вершины и завершится сразу." << endl;
+        cout << "Все остальные вершины будут недостижимы." << endl;
+        cout << "Продолжить? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << "Обход отменен." << endl;
+            deleteGraph(graph, numG, nullptr, nullptr);
+            return 0;
+        }
     }
     
     DFSDistance(graph, numG, startVertex);
