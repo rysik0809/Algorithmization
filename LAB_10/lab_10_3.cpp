@@ -13,12 +13,31 @@ using namespace std;
 const int INF = numeric_limits<int>::max();
 
 struct ProgramOptions {
-    int vertices = 0;
-    bool isWeighted = true;
-    bool isDirected = true;
-    bool showHelp = false;
-    int maxWeight = 15;
+    int vertices = 0;        
+    bool isWeighted = true;    
+    bool isDirected = true;    
+    bool showHelp = false;    
+    int maxWeight = 15;        
 };
+
+void showHelp() {
+    cout << "=== ПАРАМЕТРЫ КОМАНДНОЙ СТРОКИ ===" << endl;
+    cout << "Использование: program [параметры]" << endl;
+    cout << endl;
+    cout << "Параметры:" << endl;
+    cout << "  -n <число>     Количество вершин графа (обязательный параметр)" << endl;
+    cout << "  -t <тип>       Тип графа: 'weighted' (взвешенный) или 'unweighted' (невзвешенный)" << endl;
+    cout << "  -o <ориентация> Ориентация: 'directed' (ориентированный) или 'undirected' (неориентированный)" << endl;
+    cout << "  -w <число>     Максимальный вес ребра (только для взвешенных графов)" << endl;
+    cout << "  -h             Показать эту справку" << endl;
+    cout << endl;
+    cout << "Примеры:" << endl;
+    cout << "  program.exe -n 10 -t weighted -o directed -w 20" << endl;
+    cout << "  program.exe -n 5 -t unweighted -o undirected" << endl;
+    cout << "  program.exe -h" << endl;
+    cout << endl;
+    cout << "При запуске без параметров активируется интерактивный режим." << endl;
+}
 
 ProgramOptions parseArguments(int argc, char* argv[]) {
     ProgramOptions options;
@@ -60,6 +79,7 @@ ProgramOptions parseArguments(int argc, char* argv[]) {
             options.showHelp = true;
         } else {
             cerr << "Ошибка: неизвестный параметр: " << argv[i] << endl;
+            cerr << "Используйте -h для просмотра справки" << endl;
             exit(1);
         }
     }
@@ -162,7 +182,6 @@ vector<vector<int>> floydWarshall(const vector<vector<int>>& graph) {
 void printShortestDistances(const vector<vector<int>>& dist) {
     int n = dist.size();
     
-    cout << "== Задача 2: Поиск расстояний с использованием BFS/очереди ==" << endl;
     cout << "Матрица кратчайших расстояний (-1 означает недостижимость):" << endl << endl;
     
     cout << "|    |";
@@ -250,7 +269,8 @@ void calculateGraphProperties(const vector<vector<int>>& dist) {
         }
     }
     
-    cout << "== Дополнительная информация ==" << endl;
+    cout << "=== СВОЙСТВА ГРАФА ===" << endl;
+    
     cout << "Эксцентриситеты вершин:" << endl;
     for (int i = 0; i < n; i++) {
         if (eccentricity[i] == INF) {
@@ -330,19 +350,21 @@ ProgramOptions interactiveInput() {
 
 int main(int argc, char* argv[]) {
     srand(time(0));
+    
     ProgramOptions options;
     
     if (argc > 1) {
         options = parseArguments(argc, argv);
         
         if (options.showHelp) {
+            showHelp();
             return 0;
         }
         
         if (options.vertices == 0) {
             cout << "Ошибка: не указано количество вершин!" << endl;
             cout << "Используйте параметр -n <число>" << endl;
-            cout << endl;
+            cout << "Для справки используйте: " << argv[0] << " -h" << endl;
             return 1;
         }
     } else {
